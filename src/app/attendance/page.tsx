@@ -15,6 +15,9 @@ export default function AttendancePage() {
   const [loading, setLoading] = React.useState(true);
   const [errorDetails, setErrorDetails] = React.useState<{ message: string, details?: string } | null>(null);
   const [isReloading, setIsReloading] = React.useState(false);
+  
+  const [simulatedAttended, setSimulatedAttended] = React.useState<Record<string, number>>({});
+  const [simulatedConducted, setSimulatedConducted] = React.useState<Record<string, number>>({});
 
   const token = getToken();
   const { isRestoring } = useSessionResume(!!errorDetails || !token);
@@ -86,29 +89,53 @@ export default function AttendancePage() {
           <Link href="/" style={{ color: '#fca5a5', textDecoration: 'underline' }}>Return to Login</Link>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-          {data?.data?.map((subject: any, idx: number) => {
-            const percentage = parseFloat(subject.percentage);
-            const color = percentage >= 75 ? '#10b981' : percentage >= 65 ? '#f59e0b' : '#ef4444';
+        <>
+        <div className="glass-panel animate-fade-in" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(139, 92, 246, 0.1))', padding: '24px' }}>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '8px' }}>Predictor Simulator</h2>
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Use the + and - buttons on each course card to simulate attending or bunking future classes. See how your margins change in real-time before you make a decision!</p>
+          <button 
+            onClick={() => { setSimulatedAttended({}); setSimulatedConducted({}); }}
+            style={{ marginTop: '12px', padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '0.85rem' }}
+          >
+            Reset Simulator
+          </button>
+        </div>
 
-            const attended = parseInt(subject.attended);
-            const conducted = parseInt(subject.conducted);
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+          {data?.data?.map((subject: any, idx: number) => {
+            const baseAttended = parseInt(subject.attended);
+            const baseConducted = parseInt(subject.conducted);
+            
+            const attendedDiff = simulatedAttended[subject.courseCode] || 0;
+            const conductedDiff = simulatedConducted[subject.courseCode] || 0;
+            
+            const attended = baseAttended + attendedDiff;
+            const conducted = baseConducted + conductedDiff;
+            
+            const percentage = conducted > 0 ? (attended / conducted) * 100 : 0;
+            const displayPercentage = parseFloat(percentage.toFixed(2));
+            const color = percentage >= 75 ? '#10b981' : percentage >= 65 ? '#f59e0b' : '#ef4444';
 
             let marginText = "";
             let marginColor = "";
             let marginValue = 0;
 
             if (percentage >= 75) {
-              // margin = floor(Attended / 0.75) - Conducted
               marginValue = Math.floor(attended / 0.75) - conducted;
               marginText = marginValue === 0 ? "Margin: 0" : `Margin: ${marginValue}`;
               marginColor = marginValue > 0 ? '#10b981' : '#f59e0b';
             } else {
-              // required = ceil((0.75 * Conducted - Attended) / 0.25)
               marginValue = Math.ceil((0.75 * conducted - attended) / 0.25);
               marginText = `Required: ${marginValue}`;
               marginColor = '#ef4444';
             }
+
+            const handleSimulate = (attend: boolean) => {
+               setSimulatedConducted(prev => ({ ...prev, [subject.courseCode]: (prev[subject.courseCode] || 0) + 1 }));
+               if (attend) {
+                 setSimulatedAttended(prev => ({ ...prev, [subject.courseCode]: (prev[subject.courseCode] || 0) + 1 }));
+               }
+            };
 
             return (
               <div key={idx} className="glass-panel animate-fade-in" style={{ animationDelay: `${idx * 0.05}s` }}>
@@ -121,21 +148,36 @@ export default function AttendancePage() {
                   )}
                 </div>
                 <p style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '16px' }}>{subject.courseCode}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.8rem', color: '#cbd5e1', marginBottom: '4px' }}>Attended: {subject.attended} / {subject.conducted}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#cbd5e1', marginBottom: '4px' }}>
+                      Attended: <span style={{ fontWeight: attendedDiff !== 0 ? 'bold' : 'normal', color: attendedDiff !== 0 ? 'var(--primary)' : 'inherit' }}>{attended}</span> / <span style={{ fontWeight: conductedDiff !== 0 ? 'bold' : 'normal', color: conductedDiff !== 0 ? 'var(--primary)' : 'inherit' }}>{conducted}</span>
+                    </div>
                   </div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color }}>
-                    {subject.percentage}%
+                    {displayPercentage}%
                   </div>
                 </div>
-                <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', marginTop: '12px', overflow: 'hidden' }}>
-                  <div style={{ width: `${Math.min(percentage, 100)}%`, height: '100%', background: color, borderRadius: '3px' }} />
+                
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  <button 
+                    onClick={() => handleSimulate(true)}
+                    style={{ flex: 1, padding: '6px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
+                  >+ Attend</button>
+                  <button 
+                    onClick={() => handleSimulate(false)}
+                    style={{ flex: 1, padding: '6px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
+                  >+ Bunk</button>
+                </div>
+
+                <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.min(percentage, 100)}%`, height: '100%', background: color, borderRadius: '3px', transition: 'width 0.3s ease, background 0.3s ease' }} />
                 </div>
               </div>
             );
           })}
         </div>
+        </>
       )}
     </div>
   );

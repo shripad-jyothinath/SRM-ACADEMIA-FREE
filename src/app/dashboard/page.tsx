@@ -6,6 +6,8 @@ import { fetchUserInfo, fetchDayOrder, fetchTimetable, fetchMarks, fetchAttendan
 
 import useSWR from 'swr';
 import { useSessionResume } from '@/hooks/useSessionResume';
+import html2canvas from 'html2canvas';
+import { Download } from 'lucide-react';
 
 function getToken() {
   if (typeof window === 'undefined') return null;
@@ -96,6 +98,21 @@ export default function Dashboard() {
     }
   }, [dayOrder]);
 
+  const handleExportTimetable = async () => {
+    const el = document.getElementById('timetable-export-area');
+    if (!el) return;
+    try {
+      const canvas = await html2canvas(el, { backgroundColor: '#0f172a', scale: 2 });
+      const url = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Timetable_DayOrder_${selectedDayOrder}.png`;
+      a.click();
+    } catch (e) {
+      console.error('Export failed', e);
+    }
+  };
+
   return (
     <div className="page-container">
       <header className="glass-panel animate-fade-in" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
@@ -130,25 +147,34 @@ export default function Dashboard() {
 
               {timetable && (
                 <div style={{ marginTop: '24px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', background: 'rgba(0,0,0,0.1)', padding: '8px', borderRadius: '12px', width: 'fit-content' }}>
-                    <button
-                      onClick={() => setSelectedDayOrder(prev => String(Math.max(1, parseInt(prev) - 1)))}
-                      disabled={selectedDayOrder === "1"}
-                      style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: selectedDayOrder === "1" ? 'not-allowed' : 'pointer', opacity: selectedDayOrder === "1" ? 0.3 : 1, transition: 'all 0.2s' }}>
-                      &minus;
-                    </button>
-                    <div style={{ fontWeight: 'bold', fontSize: '1rem', width: '100px', textAlign: 'center' }}>
-                      Day Order {selectedDayOrder}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(0,0,0,0.1)', padding: '8px', borderRadius: '12px' }}>
+                      <button
+                        onClick={() => setSelectedDayOrder(prev => String(Math.max(1, parseInt(prev) - 1)))}
+                        disabled={selectedDayOrder === "1"}
+                        style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', cursor: selectedDayOrder === "1" ? 'not-allowed' : 'pointer', opacity: selectedDayOrder === "1" ? 0.3 : 1, transition: 'all 0.2s' }}>
+                        &minus;
+                      </button>
+                      <div style={{ fontWeight: 'bold', fontSize: '1rem', width: '100px', textAlign: 'center' }}>
+                        Day Order {selectedDayOrder}
+                      </div>
+                      <button
+                        onClick={() => setSelectedDayOrder(prev => String(Math.min(5, parseInt(prev) + 1)))}
+                        disabled={selectedDayOrder === "5"}
+                        style={{ padding: '8px 16px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: '8px', cursor: selectedDayOrder === "5" ? 'not-allowed' : 'pointer', opacity: selectedDayOrder === "5" ? 0.3 : 1, transition: 'all 0.2s' }}>
+                        &#43;
+                      </button>
                     </div>
-                    <button
-                      onClick={() => setSelectedDayOrder(prev => String(Math.min(5, parseInt(prev) + 1)))}
-                      disabled={selectedDayOrder === "5"}
-                      style={{ padding: '8px 16px', background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: '8px', cursor: selectedDayOrder === "5" ? 'not-allowed' : 'pointer', opacity: selectedDayOrder === "5" ? 0.3 : 1, transition: 'all 0.2s' }}>
-                      &#43;
+                    
+                    <button 
+                      onClick={handleExportTimetable}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#10b981', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', transition: 'all 0.2s' }}
+                    >
+                      <Download size={18} /> Export Image
                     </button>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div id="timetable-export-area" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '16px', background: 'var(--glass-bg)', borderRadius: '16px', border: '1px solid var(--glass-border)' }}>
                     {(() => {
                       const todaySlots = timetable[selectedDayOrder] || [];
                       const slotCount = Math.max(10, todaySlots.length);
@@ -221,8 +247,11 @@ export default function Dashboard() {
               <Link href="/marks" style={{ display: 'block' }}>
                 <button className="btn-primary" style={{ background: 'rgba(139, 92, 246, 0.2)', border: '1px solid rgba(139, 92, 246, 0.4)', color: 'var(--accent)' }}>Marks</button>
               </Link>
-              <Link href="/calendar" style={{ display: 'block', gridColumn: 'span 2' }}>
+              <Link href="/calendar" style={{ display: 'block' }}>
                 <button className="btn-primary" style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#10b981' }}>Calendar</button>
+              </Link>
+              <Link href="/calculator" style={{ display: 'block' }}>
+                <button className="btn-primary" style={{ background: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.4)', color: '#f59e0b' }}>CGPA Calc</button>
               </Link>
             </div>
           </div>
