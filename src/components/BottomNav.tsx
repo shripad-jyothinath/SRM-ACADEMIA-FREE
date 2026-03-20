@@ -49,11 +49,8 @@ export default function BottomNav() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
               <ShortcutItem href="/calculator" icon={<Calculator size={24} color="#f59e0b" />} label="CGPA Calc" bgColor="rgba(245, 158, 11, 0.15)" onClick={() => setIsModalOpen(false)} />
               <ShortcutItem href="/calendar" icon={<Calendar size={24} color="#10b981" />} label="Planner" bgColor="rgba(16, 185, 129, 0.15)" onClick={() => setIsModalOpen(false)} />
-              <ShortcutItem href="#" icon={<Utensils size={24} color="#ec4899" />} label="Mess Menu" bgColor="rgba(236, 72, 153, 0.15)" onClick={() => setIsModalOpen(false)} />
-              
               <ShortcutItem href="/attendance" icon={<Zap size={24} color="#38bdf8" />} label="Predictor" bgColor="rgba(56, 189, 248, 0.15)" onClick={() => setIsModalOpen(false)} />
-              <ShortcutItem href="#" icon={<Users size={24} color="#8b5cf6" />} label="Clubs" bgColor="rgba(139, 92, 246, 0.15)" onClick={() => setIsModalOpen(false)} />
-              <ShortcutItem href="https://discord.gg/srm" target="_blank" icon={<ExternalLink size={24} color="#6366f1" />} label="Community" bgColor="rgba(99, 102, 241, 0.15)" onClick={() => setIsModalOpen(false)} />
+              <ShortcutItem href="https://chat.whatsapp.com/example" target="_blank" icon={<ExternalLink size={24} color="#25D366" />} label="WhatsApp" bgColor="rgba(37, 211, 102, 0.15)" onClick={() => setIsModalOpen(false)} />
             </div>
           </div>
           
@@ -118,7 +115,7 @@ export default function BottomNav() {
           </button>
           
           <NavItem href="/marks" icon={<TrendingUp size={22} />} label="Marks" active={pathname === '/marks'} />
-          <NavItem href="/dashboard" icon={<BookOpen size={22} />} label="Hub" active={false} />
+          <NavItem href="/hub" icon={<BookOpen size={22} />} label="Hub" active={pathname === '/hub'} />
         </nav>
       </div>
     </>

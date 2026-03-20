@@ -274,11 +274,8 @@ export default function Dashboard() {
           <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.3s', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <h2 style={{ fontSize: '1.25rem', color: '#f8fafc' }}>Campus Community</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <a href="https://discord.gg/srm" target="_blank" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2))', border: '1px solid rgba(99, 102, 241, 0.4)', color: '#e0e7ff', textDecoration: 'none', padding: '14px', borderRadius: '16px' }}>
-                Join the SRM Discord
-              </a>
-              <a href="https://github.com/shripad-jyothinath" target="_blank" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#f8fafc', textDecoration: 'none', padding: '14px', borderRadius: '16px', boxShadow: 'none' }}>
-                Contribute on GitHub
+              <a href="https://chat.whatsapp.com/your-group-link" target="_blank" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: 'linear-gradient(90deg, rgba(37, 211, 102, 0.2), rgba(18, 140, 126, 0.2))', border: '1px solid rgba(37, 211, 102, 0.4)', color: '#25D366', textDecoration: 'none', padding: '14px', borderRadius: '16px' }}>
+                Join our WhatsApp Community
               </a>
               <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.05))', borderRadius: '20px', border: '1px solid rgba(56, 189, 248, 0.2)', marginTop: '8px' }}>
                 <h3 style={{ fontSize: '0.95rem', color: '#38bdf8', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
