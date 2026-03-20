@@ -4,8 +4,29 @@ import AdPopup from "@/components/AdPopup";
 import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "SRM Academia",
-  description: "Beautiful and dynamic SRM Academia portal",
+  title: "SRM Academia ERP Alternative - Fast Login, GPA Calculator, Attendance Predictor",
+  description: "The ultimate SRM Academia alternative portal. Bypass captchas securely, check daily day orders, simulate attendance margins in real-time, calculate SGPA/CGPA intuitively, and export your timetable instantly without server lag.",
+  keywords: "SRM Academia, SRM ERP, SRM Institute of Science and Technology, SRM Academia Login, SRM Attendance Predictor, SRM GPA Calculator, Academia Portal Bypass, SRM Day Order Today, SRM Timetable Customizer, SRM Marks, Grab-Go, CampusMatrix Alternative, SRM Connect",
+  authors: [{ name: "Grab-Go Tech" }],
+  openGraph: {
+    title: 'SRM Academia - Unofficial Fast Portal & Student Utilities',
+    description: 'Experience a faster, cleaner, and smarter interface for SRM Academia. Get rid of Academia server down errors and concurrent session limits.',
+    url: 'https://grabandgo.tech',
+    siteName: 'SRM Academia Grab-Go Portal',
+    locale: 'en_IN',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
