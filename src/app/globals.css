@@ -173,3 +173,26 @@ body {
 .btn-primary:active {
   transform: translateY(0);
 }
+
+@media (max-width: 768px) {
+  .glass-panel {
+    padding: 16px !important;
+    border-radius: 12px !important;
+  }
+}
+
+.page-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 12px;
+    gap: 16px;
+  }
+}

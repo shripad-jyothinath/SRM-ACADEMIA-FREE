@@ -94,8 +94,8 @@ export default function Dashboard() {
   }, [dayOrder]);
 
   return (
-    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <header className="glass-panel animate-fade-in" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="page-container">
+      <header className="glass-panel animate-fade-in" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
         <div>
           <h1 className="gradient-text" style={{ fontSize: '1.5rem', marginBottom: '4px' }}>Welcome back{userInfo?.name ? `, ${userInfo.name}` : ''}</h1>
           <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>{userInfo?.program || 'Loading program details...'}</p>
