@@ -52,9 +52,12 @@ export default function Page() {
   };
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div className="glass-panel animate-fade-in" style={{ maxWidth: '420px', width: '100%' }}>
-        <h1 className="gradient-text" style={{ fontSize: '2.5rem', marginBottom: '8px', textAlign: 'center', fontWeight: 700 }}>
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', padding: '24px' }}>
+      
+      {/* Login Container Centered Vertically */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
+        <div className="glass-panel animate-fade-in" style={{ maxWidth: '420px', width: '100%' }}>
+          <h1 className="gradient-text" style={{ fontSize: '2.5rem', marginBottom: '8px', textAlign: 'center', fontWeight: 700 }}>
           SRM Academia
         </h1>
         <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '40px', fontSize: '1.05rem' }}>
@@ -120,7 +123,7 @@ export default function Page() {
         It naturally scrolls, preserving the aesthetic focal point on the login card,
         but exposes the text statically to web scrapers and crawlers!
       */}
-      <div style={{ marginTop: '120px', width: '100%' }}>
+      <div style={{ width: '100%', marginTop: '60px' }}>
         <SeoContent />
       </div>
 
