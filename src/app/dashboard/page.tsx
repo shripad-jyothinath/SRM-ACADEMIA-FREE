@@ -146,39 +146,61 @@ export default function Dashboard() {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {timetable[selectedDayOrder]?.map((slotInfo: any, idx: number) => {
-                      if (!slotInfo) return null;
+                    {(() => {
+                      const todaySlots = timetable[selectedDayOrder] || [];
+                      const slotCount = Math.max(10, todaySlots.length);
+                      const paddedSlots = Array.from({ length: slotCount }, (_, i) => todaySlots[i] || null);
+
                       const slotTimings = [
                         "08:00 AM - 08:50 AM", "08:50 AM - 09:40 AM", "09:45 AM - 10:35 AM", "10:40 AM - 11:30 AM", "11:35 AM - 12:25 PM",
                         "12:30 PM - 01:20 PM", "01:25 PM - 02:15 PM", "02:20 PM - 03:10 PM", "03:15 PM - 04:05 PM", "04:05 PM - 04:55 PM"
                       ];
 
-                      return (
-                        <div key={idx} style={{ background: 'linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(0,0,0,0.3))', padding: '16px', borderRadius: '12px', borderLeft: '4px solid var(--primary)', marginBottom: '8px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <div style={{ fontWeight: '900', fontSize: '1.15rem', color: '#38bdf8', letterSpacing: '0.5px' }}>
-                              {slotTimings[idx] || "Time TBA"}
+                      return paddedSlots.map((slotInfo: any, idx: number) => {
+                        const timeStr = slotTimings[idx] || "Extended Timing";
+
+                        if (!slotInfo) {
+                          return (
+                            <div key={idx} style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', borderLeft: '4px solid rgba(255,255,255,0.1)', marginBottom: '8px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ fontWeight: '900', fontSize: '1.05rem', color: '#64748b', letterSpacing: '0.5px' }}>
+                                  {timeStr}
+                                </div>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', color: '#94a3b8', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                                  P - {idx + 1}
+                                </div>
+                              </div>
+                              <div style={{ fontSize: '1rem', fontWeight: '500', color: '#475569', marginTop: '6px' }}>
+                                No Class
+                              </div>
                             </div>
-                            <div style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                              {slotInfo.slot}
+                          );
+                        }
+
+                        return (
+                          <div key={idx} style={{ background: 'linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(0,0,0,0.3))', padding: '16px', borderRadius: '12px', borderLeft: '4px solid var(--primary)', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                              <div style={{ fontWeight: '900', fontSize: '1.15rem', color: '#38bdf8', letterSpacing: '0.5px' }}>
+                                {timeStr}
+                              </div>
+                              <div style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                {slotInfo.slot}
+                              </div>
+                            </div>
+                            <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#f1f5f9', marginBottom: '8px', lineHeight: '1.4' }}>
+                              {slotInfo.title}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: '#94a3b8' }}>
+                              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>{slotInfo.code}</div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#cbd5e1' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                {slotInfo.room}
+                              </div>
                             </div>
                           </div>
-                          <div style={{ fontSize: '1.05rem', fontWeight: '600', color: '#f1f5f9', marginBottom: '8px', lineHeight: '1.4' }}>
-                            {slotInfo.title}
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: '#94a3b8' }}>
-                            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>{slotInfo.code}</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#cbd5e1' }}>
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                              {slotInfo.room}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {(!timetable[selectedDayOrder] || timetable[selectedDayOrder].every((s: any) => s === null)) && (
-                      <div style={{ padding: '16px', textAlign: 'center', color: '#64748b', fontSize: '0.85rem' }}>No classes scheduled for this day order</div>
-                    )}
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               )}
