@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import SeoContent from '@/components/SeoContent';
 
 export default function Page() {
   const [username, setUsername] = useState('');
@@ -118,16 +117,6 @@ export default function Page() {
         </form>
       </div>
       </div>
-      
-      {/* 
-        Placing this massive SEO content below the fold. 
-        It naturally scrolls, preserving the aesthetic focal point on the login card,
-        but exposes the text statically to web scrapers and crawlers!
-      */}
-      <div style={{ width: '100%', marginTop: '60px' }}>
-        <SeoContent />
-      </div>
-
     </main>
   );
 }
