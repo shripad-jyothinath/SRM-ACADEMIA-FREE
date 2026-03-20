@@ -35,26 +35,23 @@ export default function HubPage() {
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
           
-          <HubCard 
-            title="Academic Planner" 
-            description="Organize your upcoming assignments, internals, and project deadlines in one place."
-            icon={<CheckSquare size={24} color="#10b981" />} 
-            delay="0.2s"
-          />
+          <Link href="/calendar" style={{ textDecoration: 'none' }}>
+            <HubCard 
+              title="Academic Planner" 
+              description="Organize your upcoming assignments, internals, and project deadlines in one place."
+              icon={<CheckSquare size={24} color="#10b981" />} 
+              delay="0.2s"
+            />
+          </Link>
           
-          <HubCard 
-            title="Study Materials" 
-            description="Access crowd-sourced notes, past year question papers, and syllabus copies."
-            icon={<FileText size={24} color="#f59e0b" />} 
-            delay="0.3s"
-          />
-          
-          <HubCard 
-            title="Recreation / Sports" 
-            description="Book courts, see upcoming intramural matches, and join sports clubs."
-            icon={<Gamepad2 size={24} color="#ec4899" />} 
-            delay="0.4s"
-          />
+          <a href="https://thehelpers.vercel.app" target="_blank" style={{ textDecoration: 'none' }}>
+            <HubCard 
+              title="Study Materials" 
+              description="Access crowd-sourced notes, past year question papers, and syllabus copies via TheHelpers."
+              icon={<FileText size={24} color="#f59e0b" />} 
+              delay="0.3s"
+            />
+          </a>
 
         </div>
       </div>

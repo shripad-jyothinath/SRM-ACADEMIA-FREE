@@ -120,10 +120,10 @@ export default function Dashboard() {
           <h1 className="gradient-text" style={{ fontSize: '1.5rem', marginBottom: '4px' }}>Welcome back{userInfo?.name ? `, ${userInfo.name}` : ''}</h1>
           <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>{userInfo?.program || 'Loading program details...'}</p>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '0.875rem', color: '#94a3b8' }}>Registration</div>
-          <div style={{ fontWeight: 'bold' }}>{userInfo?.regNumber || userInfo?.registrationNumber || '...'}</div>
-        </div>
+        <Link href="/profile" style={{ textAlign: 'right', textDecoration: 'none', background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
+          <div style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>View Profile</div>
+          <div style={{ fontWeight: 'bold', color: '#f8fafc' }}>{userInfo?.regNumber || userInfo?.registrationNumber || '...'} &rarr;</div>
+        </Link>
       </header>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>

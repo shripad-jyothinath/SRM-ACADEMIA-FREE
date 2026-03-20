@@ -10,12 +10,22 @@ export default function AdPopup() {
 
   useEffect(() => {
     const token = localStorage.getItem('srm_token');
+    
     // Only show if user is logged in (token exists) and they are not on the login page
     if (token && pathname !== '/') {
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 700);
-      return () => clearTimeout(timer);
+      const clickCount = parseInt(localStorage.getItem('ad_popup_counter') || '0', 10);
+      const newCount = clickCount + 1;
+      localStorage.setItem('ad_popup_counter', newCount.toString());
+      
+      // Trigger only every 8 clicks/navigation
+      if (newCount % 8 === 0) {
+        const timer = setTimeout(() => {
+          setIsVisible(true);
+        }, 700);
+        return () => clearTimeout(timer);
+      } else {
+        setIsVisible(false);
+      }
     } else {
       setIsVisible(false);
     }
