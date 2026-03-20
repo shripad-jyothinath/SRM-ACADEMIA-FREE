@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { fetchUserInfo, fetchDayOrder, fetchTimetable, fetchMarks, fetchAttendance } from '@/app/actions';
 
 import useSWR from 'swr';
+import { useSessionResume } from '@/hooks/useSessionResume';
 
 function getToken() {
   if (typeof window === 'undefined') return null;
@@ -78,6 +79,8 @@ export default function Dashboard() {
     }
   }
 
+  const { isRestoring } = useSessionResume(!!errorDetails || !token);
+
   const [selectedDayOrder, setSelectedDayOrder] = React.useState<string>("1");
   const [isHoliday, setIsHoliday] = React.useState<boolean>(false);
 
@@ -112,14 +115,14 @@ export default function Dashboard() {
             <h2 style={{ fontSize: '1.25rem' }}>Today's Overview</h2>
             {isHoliday && <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', padding: '4px 12px', borderRadius: '16px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid rgba(16, 185, 129, 0.4)' }}>HOLIDAY</div>}
           </div>
-          {errorDetails ? (
+          {(loading || isRestoring) ? (
+            <p style={{ color: '#94a3b8' }}>{isRestoring ? 'Restoring your session...' : 'Loading schedule...'}</p>
+          ) : errorDetails ? (
             <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px' }}>
               <div style={{ color: '#fca5a5', fontWeight: 'bold', marginBottom: '8px' }}>{errorDetails.message}</div>
               {errorDetails.details && <div style={{ color: '#f87171', fontSize: '0.85rem', marginBottom: '12px' }}>{errorDetails.details}</div>}
               <Link href="/" style={{ color: '#fca5a5', textDecoration: 'underline', fontSize: '0.85rem' }}>Return to Login</Link>
             </div>
-          ) : loading ? (
-            <p style={{ color: '#94a3b8' }}>Loading schedule...</p>
           ) : (
             <div>
               <p style={{ marginBottom: '8px' }}><strong>Today's Day Order:</strong> <span className="gradient-text" style={{ fontWeight: 'bold' }}>{dayOrder?.dayOrder && dayOrder.dayOrder !== "-" ? dayOrder.dayOrder : 'None'}</span></p>

@@ -39,6 +39,8 @@ export default function Page() {
       // because the token string contains semicolons which document.cookie
       // treats as attribute separators, corrupting the stored value
       localStorage.setItem('srm_token', data.token);
+      localStorage.setItem('srm_username', username);
+      localStorage.setItem('srm_password', password);
 
       router.push('/dashboard');
     } catch (err: any) {
@@ -84,26 +86,26 @@ export default function Page() {
             <label style={{ display: 'block', marginBottom: '10px', fontSize: '0.9rem', fontWeight: 500, color: '#e2e8f0' }}>
               SRM Email ID (or NetID)
             </label>
-            <input 
-              type="text" 
-              className="input-field" 
-              placeholder="ab1234@srmist.edu.in" 
+            <input
+              type="text"
+              className="input-field"
+              placeholder="ab1234@srmist.edu.in"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required 
+              required
             />
           </div>
           <div className="input-group">
             <label style={{ display: 'block', marginBottom: '10px', fontSize: '0.9rem', fontWeight: 500, color: '#e2e8f0' }}>
               Password
             </label>
-            <input 
-              type="password" 
-              className="input-field" 
-              placeholder="••••••••" 
+            <input
+              type="password"
+              className="input-field"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required 
+              required
             />
           </div>
           <button type="submit" className="btn-primary" style={{ marginTop: '12px' }} disabled={loading}>

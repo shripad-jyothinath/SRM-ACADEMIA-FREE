@@ -3,6 +3,8 @@ import React from 'react';
 import Link from 'next/link';
 import { fetchAttendance } from '@/app/actions';
 
+import { useSessionResume } from '@/hooks/useSessionResume';
+
 function getToken() {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('srm_token');
@@ -14,8 +16,10 @@ export default function AttendancePage() {
   const [errorDetails, setErrorDetails] = React.useState<{ message: string, details?: string } | null>(null);
   const [isReloading, setIsReloading] = React.useState(false);
 
+  const token = getToken();
+  const { isRestoring } = useSessionResume(!!errorDetails || !token);
+
   const loadData = async (forceRefresh: boolean) => {
-    const token = getToken();
     if (!token) {
       setErrorDetails({ message: 'Not logged in', details: 'Please log in again.' });
       setLoading(false);
@@ -73,8 +77,8 @@ export default function AttendancePage() {
         </div>
       </header>
 
-      {loading ? (
-        <div className="glass-panel" style={{ textAlign: 'center', color: '#94a3b8' }}>Loading attendance...</div>
+      {(loading || isRestoring) ? (
+        <div className="glass-panel" style={{ textAlign: 'center', color: '#94a3b8' }}>{isRestoring ? 'Restoring your session...' : 'Loading attendance...'}</div>
       ) : errorDetails ? (
         <div className="glass-panel" style={{ padding: '24px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px' }}>
           <h2 style={{ color: '#fca5a5', fontSize: '1.25rem', marginBottom: '8px' }}>{errorDetails.message}</h2>

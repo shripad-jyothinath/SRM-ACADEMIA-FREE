@@ -5,20 +5,22 @@ import useSWR from 'swr';
 import { fetchMarks } from '@/app/actions';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+import { useSessionResume } from '@/hooks/useSessionResume';
+
 function getToken() {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('srm_token');
 }
 
-
-
 export default function MarksPage() {
   const token = getToken();
-  const [isReloading, setIsReloading] = React.useState(false);
 
+  const [isReloading, setIsReloading] = React.useState(false);
   const [data, setData] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
   const [errorDetails, setErrorDetails] = React.useState<{ message: string, details?: string } | null>(null);
+
+  const { isRestoring } = useSessionResume(!!errorDetails || !token);
 
   const loadData = async (forceRefresh: boolean) => {
     if (!token) {
@@ -120,8 +122,8 @@ export default function MarksPage() {
         </div>
       </header>
 
-      {loading ? (
-        <div className="glass-panel" style={{ textAlign: 'center', color: '#94a3b8' }}>Loading marks...</div>
+      {(loading || isRestoring) ? (
+        <div className="glass-panel" style={{ textAlign: 'center', color: '#94a3b8' }}>{isRestoring ? 'Restoring your session...' : 'Loading marks...'}</div>
       ) : errorDetails ? (
         <div className="glass-panel" style={{ padding: '24px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px' }}>
           <h2 style={{ color: '#fca5a5', fontSize: '1.25rem', marginBottom: '8px' }}>{errorDetails.message}</h2>

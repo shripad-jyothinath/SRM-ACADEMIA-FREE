@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
+import { useSessionResume } from '@/hooks/useSessionResume';
 import { fetchCalendar } from '@/app/actions';
 
 function getToken() {
@@ -50,6 +51,8 @@ export default function CalendarPage() {
     }
   }
 
+  const { isRestoring } = useSessionResume(!!errorDetails || !token);
+
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
@@ -57,8 +60,8 @@ export default function CalendarPage() {
         <Link href="/dashboard" style={{ color: 'var(--primary)', textDecoration: 'none' }}>&larr; Back to Dashboard</Link>
       </header>
 
-      {loading ? (
-        <div className="glass-panel" style={{ textAlign: 'center', color: '#94a3b8' }}>Loading calendar...</div>
+      {(loading || isRestoring) ? (
+        <div className="glass-panel" style={{ textAlign: 'center', color: '#94a3b8' }}>{isRestoring ? 'Restoring your session...' : 'Loading calendar...'}</div>
       ) : errorDetails ? (
         <div className="glass-panel" style={{ padding: '24px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px' }}>
           <h2 style={{ color: '#fca5a5', fontSize: '1.25rem', marginBottom: '8px' }}>{errorDetails.message}</h2>
