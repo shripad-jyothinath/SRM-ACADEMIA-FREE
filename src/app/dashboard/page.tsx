@@ -238,43 +238,57 @@ export default function Dashboard() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.2s', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h2 style={{ fontSize: '1.25rem' }}>Quick Actions</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <Link href="/attendance" style={{ display: 'block' }}>
-                <button className="btn-primary" style={{ background: 'rgba(59, 130, 246, 0.2)', border: '1px solid rgba(59, 130, 246, 0.4)', color: 'var(--primary)' }}>Attendance</button>
-              </Link>
-              <Link href="/marks" style={{ display: 'block' }}>
-                <button className="btn-primary" style={{ background: 'rgba(139, 92, 246, 0.2)', border: '1px solid rgba(139, 92, 246, 0.4)', color: 'var(--accent)' }}>Marks</button>
-              </Link>
-              <Link href="/calendar" style={{ display: 'block' }}>
-                <button className="btn-primary" style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#10b981' }}>Calendar</button>
-              </Link>
-              <Link href="/calculator" style={{ display: 'block' }}>
-                <button className="btn-primary" style={{ background: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.4)', color: '#f59e0b' }}>CGPA Calc</button>
-              </Link>
-            </div>
-          </div>
-
+          
           {dashSummary && (
-            <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.3s', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <h2 style={{ fontSize: '1.25rem' }}>Current Performance</h2>
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                <div style={{ flex: 1, background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px', textAlign: 'center' }}>
-                  <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginBottom: '8px' }}>Total Marks</div>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'var(--primary)' }}>
-                    {dashSummary.marks} <span style={{ fontSize: '0.9rem', color: '#64748b' }}>/ {dashSummary.maxMarks}</span>
+            <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.2s', display: 'flex', flexDirection: 'column', gap: '20px', background: 'linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8))' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ fontSize: '1.25rem', color: '#f8fafc' }}>Current Performance</h2>
+                <div style={{ width: '40px', height: '4px', background: 'var(--primary)', borderRadius: '2px' }}></div>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'stretch' }}>
+                <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'var(--primary)', filter: 'blur(40px)', opacity: 0.3 }}></div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '1px' }}>INTERNAL MARKS</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                    <span style={{ fontWeight: '800', fontSize: '2.5rem', color: '#ffffff', lineHeight: 1 }}>{dashSummary.marks}</span>
+                    <span style={{ fontSize: '1.1rem', color: '#64748b', fontWeight: '600' }}>/ {dashSummary.maxMarks}</span>
                   </div>
                 </div>
-                <div style={{ flex: 1, background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px', textAlign: 'center' }}>
-                  <div style={{ color: '#94a3b8', fontSize: '0.8rem', marginBottom: '8px' }}>Attendance</div>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.5rem', color: parseFloat(dashSummary.attendance) >= 75 ? '#10b981' : '#f43f5e' }}>
-                    {dashSummary.attendance}%
+                
+                <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: parseFloat(dashSummary.attendance) >= 75 ? '#10b981' : '#f43f5e', filter: 'blur(40px)', opacity: 0.25 }}></div>
+                  <div style={{ color: '#94a3b8', fontSize: '0.85rem', marginBottom: '12px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '1px' }}>ATTENDANCE</div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
+                    <span style={{ fontWeight: '800', fontSize: '2.5rem', color: parseFloat(dashSummary.attendance) >= 75 ? '#34d399' : '#fb7185', lineHeight: 1 }}>{dashSummary.attendance}</span>
+                    <span style={{ fontSize: '1.5rem', color: parseFloat(dashSummary.attendance) >= 75 ? '#34d399' : '#fb7185', fontWeight: 'bold' }}>%</span>
                   </div>
+                  {parseFloat(dashSummary.attendance) < 75 && (
+                    <div style={{ position: 'absolute', bottom: '12px', right: '16px', fontSize: '0.75rem', color: '#fb7185', fontWeight: '700', letterSpacing: '0.5px' }}>CRITICAL</div>
+                  )}
                 </div>
               </div>
             </div>
           )}
+
+          <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.3s', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h2 style={{ fontSize: '1.25rem', color: '#f8fafc' }}>Campus Community</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <a href="https://discord.gg/srm" target="_blank" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2))', border: '1px solid rgba(99, 102, 241, 0.4)', color: '#e0e7ff', textDecoration: 'none', padding: '14px', borderRadius: '16px' }}>
+                Join the SRM Discord
+              </a>
+              <a href="https://github.com/shripad-jyothinath" target="_blank" className="btn-primary" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', color: '#f8fafc', textDecoration: 'none', padding: '14px', borderRadius: '16px', boxShadow: 'none' }}>
+                Contribute on GitHub
+              </a>
+              <div style={{ padding: '20px', background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.05))', borderRadius: '20px', border: '1px solid rgba(56, 189, 248, 0.2)', marginTop: '8px' }}>
+                <h3 style={{ fontSize: '0.95rem', color: '#38bdf8', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '1.1rem' }}>📣</span> Latest Announcements
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: '#94a3b8', lineHeight: '1.5' }}>Grab-Go App v2.0 is live! Explore the new GPA simulator, attendance margins predictor, and navigate seamlessly with the new bottom navbar menu.</p>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </div>
     </div>

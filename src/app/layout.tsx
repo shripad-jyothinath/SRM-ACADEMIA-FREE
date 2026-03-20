@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AdPopup from "@/components/AdPopup";
+import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
   title: "SRM Academia",
@@ -20,9 +21,15 @@ export default function RootLayout({
           <div className="orb-2"></div>
           <div className="orb-3"></div>
         </div>
-        {children}
+        
+        <div style={{ paddingBottom: '100px' }}>
+          {children}
+        </div>
+        
+        <BottomNav />
         <AdPopup />
       </body>
     </html>
   );
 }
+
