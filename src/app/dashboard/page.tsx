@@ -142,8 +142,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div>
-              <p style={{ marginBottom: '8px' }}><strong>Today's Day Order:</strong> <span className="gradient-text" style={{ fontWeight: 'bold' }}>{dayOrder?.dayOrder && dayOrder.dayOrder !== "-" ? dayOrder.dayOrder : 'None'}</span></p>
-              <p style={{ marginBottom: '16px', color: '#94a3b8', fontSize: '0.875rem' }}>{userInfo?.department || ''}{userInfo?.section ? ` – ${userInfo.section}` : ''}</p>
+              <p style={{ marginBottom: '16px' }}><strong>Today's Day Order:</strong> <span className="gradient-text" style={{ fontWeight: 'bold' }}>{dayOrder?.dayOrder && dayOrder.dayOrder !== "-" ? dayOrder.dayOrder : 'None'}</span></p>
 
               {timetable && (
                 <div style={{ marginTop: '24px' }}>

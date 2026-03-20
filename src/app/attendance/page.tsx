@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { fetchAttendance } from '@/app/actions';
+import { fetchAttendance, fetchTimetable } from '@/app/actions';
 
 import { useSessionResume } from '@/hooks/useSessionResume';
 
@@ -12,6 +12,7 @@ function getToken() {
 
 export default function AttendancePage() {
   const [data, setData] = React.useState<any>(null);
+  const [timetable, setTimetable] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
   const [errorDetails, setErrorDetails] = React.useState<{ message: string, details?: string } | null>(null);
   const [isReloading, setIsReloading] = React.useState(false);
@@ -33,10 +34,14 @@ export default function AttendancePage() {
     else setLoading(true);
 
     try {
-      const json = await fetchAttendance(token, forceRefresh);
+      const [json, ttRes] = await Promise.all([
+        fetchAttendance(token, forceRefresh),
+        fetchTimetable(token)
+      ]);
       if (json?.error) throw new Error(JSON.stringify(json));
       setErrorDetails(null);
       setData(json);
+      if (ttRes?.schedule) setTimetable(ttRes.schedule);
     } catch (err: any) {
       try {
         const parsed = JSON.parse(err.message);
@@ -92,10 +97,31 @@ export default function AttendancePage() {
         <>
         <div className="glass-panel animate-fade-in" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(139, 92, 246, 0.1))', padding: '24px' }}>
           <h2 style={{ fontSize: '1.25rem', marginBottom: '8px' }}>Predictor Simulator</h2>
-          <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Use the + and - buttons on each course card to simulate attending or bunking future classes. See how your margins change in real-time before you make a decision!</p>
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '16px' }}>Use the + and - buttons on each course card to simulate attending or bunking future classes. See how your margins change in real-time before you make a decision!</p>
+          
+          {timetable && (
+            <div style={{ marginBottom: '16px', background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px' }}>
+              <div style={{ fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>Quick Bunk by Day Order</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {["1", "2", "3", "4", "5"].map(day => (
+                  <button key={day} onClick={() => {
+                    if (!timetable[day]) return;
+                    const newConducted = { ...simulatedConducted };
+                    timetable[day].forEach((slot: any) => {
+                      if (slot && slot.code) newConducted[slot.code] = (newConducted[slot.code] || 0) + 1;
+                    });
+                    setSimulatedConducted(newConducted);
+                  }} style={{ padding: '8px 16px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', transition: 'all 0.2s' }} onMouseOver={e=>e.currentTarget.style.background='rgba(239, 68, 68, 0.25)'} onMouseOut={e=>e.currentTarget.style.background='rgba(239, 68, 68, 0.15)'}>
+                    Bunk Day {day}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <button 
             onClick={() => { setSimulatedAttended({}); setSimulatedConducted({}); }}
-            style={{ marginTop: '12px', padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '0.85rem' }}
+            style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '0.85rem' }}
           >
             Reset Simulator
           </button>
@@ -122,8 +148,13 @@ export default function AttendancePage() {
 
             if (percentage >= 75) {
               marginValue = Math.floor(attended / 0.75) - conducted;
-              marginText = marginValue === 0 ? "Margin: 0" : `Margin: ${marginValue}`;
-              marginColor = marginValue > 0 ? '#10b981' : '#f59e0b';
+              if (marginValue > 0) {
+                marginText = `Safe (Margin: ${marginValue})`;
+                marginColor = '#10b981';
+              } else {
+                marginText = `Warning (Margin: 0)`;
+                marginColor = '#f59e0b';
+              }
             } else {
               marginValue = Math.ceil((0.75 * conducted - attended) / 0.25);
               marginText = `Required: ${marginValue}`;

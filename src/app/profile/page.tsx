@@ -60,9 +60,9 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             
-            <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.1s', width: '100%', maxWidth: '600px' }}>
               <h3 style={{ fontSize: '1.25rem', color: '#f8fafc', marginBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>Academic Information</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <InfoRow icon={<Building size={20} color="#38bdf8" />} label="Program" value={user.program} />
@@ -70,16 +70,6 @@ export default function ProfilePage() {
                 <InfoRow icon={<Users size={20} color="#c084fc" />} label="Section" value={user.section} />
                 <InfoRow icon={<CalendarDays size={20} color="#f472b6" />} label="Semester" value={user.semester} />
                 <InfoRow icon={<CalendarDays size={20} color="#fb7185" />} label="Batch" value={user.batch} />
-              </div>
-            </div>
-
-            <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              <h3 style={{ fontSize: '1.25rem', color: '#f8fafc', marginBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>Personal Information</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <InfoRow icon={<Mail size={20} color="#10b981" />} label="Official Email" value={user.officialEmail || `${user.regNumber}@srmist.edu.in`} />
-                <InfoRow icon={<Mail size={20} color="#34d399" />} label="Personal Email" value={user.personalEmail || "Confidential"} />
-                <InfoRow icon={<MapPin size={20} color="#f59e0b" />} label="Date of Birth" value={user.dob || "Confidential"} />
-                <InfoRow icon={<Shield size={20} color="#ef4444" />} label="Blood Group" value={user.bloodGroup || "Confidential"} />
               </div>
             </div>
 
