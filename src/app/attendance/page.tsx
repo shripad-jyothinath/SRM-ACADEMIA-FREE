@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import { fetchAttendance, fetchTimetable } from '@/app/actions';
+import { fetchAttendance, fetchTimetable, fetchCalendar } from '@/app/actions';
 
 import { useSessionResume } from '@/hooks/useSessionResume';
 
@@ -13,6 +13,9 @@ function getToken() {
 export default function AttendancePage() {
   const [data, setData] = React.useState<any>(null);
   const [timetable, setTimetable] = React.useState<any>(null);
+  const [calendarDays, setCalendarDays] = React.useState<any[]>([]);
+  const [fromDate, setFromDate] = React.useState('');
+  const [toDate, setToDate] = React.useState('');
   const [loading, setLoading] = React.useState(true);
   const [errorDetails, setErrorDetails] = React.useState<{ message: string, details?: string } | null>(null);
   const [isReloading, setIsReloading] = React.useState(false);
@@ -34,14 +37,39 @@ export default function AttendancePage() {
     else setLoading(true);
 
     try {
-      const [json, ttRes] = await Promise.all([
+      const [json, ttRes, calRes] = await Promise.all([
         fetchAttendance(token, forceRefresh),
-        fetchTimetable(token)
+        fetchTimetable(token),
+        fetchCalendar(token)
       ]);
       if (json?.error) throw new Error(JSON.stringify(json));
       setErrorDetails(null);
       setData(json);
       if (ttRes?.schedule) setTimetable(ttRes.schedule);
+      
+      if (calRes && calRes.months) {
+        const flat: any[] = [];
+        const monthsMap: Record<string, number> = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+        calRes.months.forEach((m: any) => {
+          const lower = m.name.toLowerCase();
+          let mIdx = -1;
+          Object.keys(monthsMap).forEach(k => { if (lower.includes(k)) mIdx = monthsMap[k]; });
+          
+          const yearMatch = m.name.match(/\d{2,4}/);
+          let year = yearMatch ? parseInt(yearMatch[0]) : new Date().getFullYear();
+          if (year < 100) year += 2000;
+          
+          if (mIdx !== -1) {
+            m.days.forEach((d: any) => {
+              const dateObj = new Date(year, mIdx, parseInt(d.date), 12, 0, 0); // Noon
+              if (d.dayOrder && d.dayOrder !== "-") {
+                 flat.push({ date: dateObj, dayOrder: d.dayOrder });
+              }
+            });
+          }
+        });
+        setCalendarDays(flat);
+      }
     } catch (err: any) {
       try {
         const parsed = JSON.parse(err.message);
@@ -99,28 +127,48 @@ export default function AttendancePage() {
           <h2 style={{ fontSize: '1.25rem', marginBottom: '8px' }}>Predictor Simulator</h2>
           <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginBottom: '16px' }}>Use the + and - buttons on each course card to simulate attending or bunking future classes. See how your margins change in real-time before you make a decision!</p>
           
-          {timetable && (
+          {timetable && calendarDays.length > 0 && (
             <div style={{ marginBottom: '16px', background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px' }}>
-              <div style={{ fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>Quick Bunk by Day Order</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                {["1", "2", "3", "4", "5"].map(day => (
-                  <button key={day} onClick={() => {
-                    if (!timetable[day]) return;
-                    const newConducted = { ...simulatedConducted };
-                    timetable[day].forEach((slot: any) => {
-                      if (slot && slot.code) newConducted[slot.code] = (newConducted[slot.code] || 0) + 1;
-                    });
-                    setSimulatedConducted(newConducted);
-                  }} style={{ padding: '8px 16px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', transition: 'all 0.2s' }} onMouseOver={e=>e.currentTarget.style.background='rgba(239, 68, 68, 0.25)'} onMouseOut={e=>e.currentTarget.style.background='rgba(239, 68, 68, 0.15)'}>
-                    Bunk Day {day}
-                  </button>
-                ))}
+              <div style={{ fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '12px', fontWeight: 'bold' }}>Simulate Bunk via Date Range</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'flex-end' }}>
+                <div style={{ flex: 1, minWidth: '140px' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '4px' }}>From Date</label>
+                  <input type="date" value={fromDate} min={new Date().toISOString().split('T')[0]} onChange={e => { setFromDate(e.target.value); if(toDate && e.target.value > toDate) setToDate(''); }} style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#f8fafc', borderRadius: '8px', colorScheme: 'dark' }} />
+                </div>
+                <div style={{ flex: 1, minWidth: '140px' }}>
+                  <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', marginBottom: '4px' }}>To Date</label>
+                  <input type="date" value={toDate} min={fromDate || new Date().toISOString().split('T')[0]} onChange={e => setToDate(e.target.value)} style={{ width: '100%', padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#f8fafc', borderRadius: '8px', colorScheme: 'dark' }} />
+                </div>
+                <button 
+                  onClick={() => {
+                     if (!fromDate || !toDate) return;
+                     const start = new Date(fromDate);
+                     start.setHours(0,0,0,0);
+                     const end = new Date(toDate);
+                     end.setHours(23,59,59,999);
+                     
+                     const newConducted = { ...simulatedConducted };
+                     calendarDays.forEach(fd => {
+                         if (fd.date >= start && fd.date <= end && timetable[fd.dayOrder]) {
+                             timetable[fd.dayOrder].forEach((slot: any) => {
+                                if (slot && slot.code) newConducted[slot.code] = (newConducted[slot.code] || 0) + 1;
+                             });
+                         }
+                     });
+                     setSimulatedConducted(newConducted);
+                  }} 
+                  style={{ padding: '8px 16px', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold', height: '37px', transition: 'all 0.2s' }} 
+                  onMouseOver={e=>e.currentTarget.style.background='rgba(239, 68, 68, 0.25)'} 
+                  onMouseOut={e=>e.currentTarget.style.background='rgba(239, 68, 68, 0.15)'}
+                >
+                  Apply Bunk
+                </button>
               </div>
             </div>
           )}
 
           <button 
-            onClick={() => { setSimulatedAttended({}); setSimulatedConducted({}); }}
+            onClick={() => { setSimulatedAttended({}); setSimulatedConducted({}); setFromDate(''); setToDate(''); }}
             style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontSize: '0.85rem' }}
           >
             Reset Simulator
