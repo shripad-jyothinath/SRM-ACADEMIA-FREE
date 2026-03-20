@@ -1,7 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { fetchAttendance } from '@/app/actions';
+
+function getToken() {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('srm_token');
+}
 
 type CourseGrade = {
   id: string;
@@ -25,11 +31,44 @@ const GRADE_POINTS: Record<string, number> = {
 };
 
 export default function CalculatorPage() {
-  const [courses, setCourses] = useState<CourseGrade[]>([
-    { id: '1', name: 'Course 1', credits: 3, grade: 'O' },
-    { id: '2', name: 'Course 2', credits: 4, grade: 'A+' },
-    { id: '3', name: 'Course 3', credits: 3, grade: 'A' }
-  ]);
+  const [courses, setCourses] = useState<CourseGrade[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const initCourses = async () => {
+      const token = getToken();
+      if (!token) {
+         setCourses([{ id: '1', name: 'Please login first', credits: 0, grade: 'O' }]);
+         setLoading(false);
+         return;
+      }
+      try {
+        const attData = await fetchAttendance(token, false);
+        if (attData?.data?.length > 0) {
+          const fetched = attData.data.map((subject: any, idx: number) => {
+             // Heuristic: 'J' suffix courses in SRM indicate integrated Theory+Lab (typically 4 credits). Others are default 3.
+             const defaultCredits = subject.courseCode?.endsWith('J') ? 4 : 3;
+             return {
+               id: Date.now().toString() + idx,
+               name: subject.courseTitle || subject.courseCode,
+               credits: defaultCredits,
+               grade: 'A' // default
+             };
+          });
+          setCourses(fetched);
+        } else {
+          setCourses([
+            { id: '1', name: 'Data Structures', credits: 3, grade: 'O' },
+          ]);
+        }
+      } catch (err) {
+         setCourses([{ id: '1', name: 'Failed to sync', credits: 3, grade: 'A' }]);
+      } finally {
+         setLoading(false);
+      }
+    };
+    initCourses();
+  }, []);
   const [targetCgpa, setTargetCgpa] = useState<string>('');
   
   const [pastCredits, setPastCredits] = useState<string>('0');
@@ -112,7 +151,10 @@ export default function CalculatorPage() {
 
           <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2 style={{ fontSize: '1.25rem' }}>Current Semester Courses</h2>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                <h2 style={{ fontSize: '1.25rem' }}>Current Semester Courses</h2>
+                {loading ? <span style={{ fontSize: '0.8rem', color: '#38bdf8' }}>(Syncing...)</span> : <span style={{ fontSize: '0.8rem', color: '#10b981' }}>(Auto-synced)</span>}
+              </div>
               <button 
                 onClick={addCourse}
                 style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px', fontSize: '1.2rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
