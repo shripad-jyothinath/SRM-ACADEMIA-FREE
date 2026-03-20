@@ -117,6 +117,7 @@ export default function Page() {
           </button>
         </form>
       </div>
+      </div>
       
       {/* 
         Placing this massive SEO content below the fold. 
