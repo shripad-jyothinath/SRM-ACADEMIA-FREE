@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AdPopup from "@/components/AdPopup";
 
 export const metadata: Metadata = {
   title: "SRM Academia",
@@ -20,6 +21,7 @@ export default function RootLayout({
           <div className="orb-3"></div>
         </div>
         {children}
+        <AdPopup />
       </body>
     </html>
   );
