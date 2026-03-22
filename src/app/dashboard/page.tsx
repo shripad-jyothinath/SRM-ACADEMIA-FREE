@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { fetchUserInfo, fetchDayOrder, fetchTimetable, fetchMarks, fetchAttendance } from '@/app/actions';
+import InstallPrompt from '@/components/InstallPrompt';
 
 import useSWR from 'swr';
 import { useSessionResume } from '@/hooks/useSessionResume';
@@ -51,7 +52,8 @@ const fetchDashboardData = async ([, token]: [string, string]) => {
       marks: tScored.toFixed(2),
       maxMarks: tMax.toFixed(2),
       attendance: attPercent
-    }
+    },
+    attendanceDetails: attendanceRes?.data || []
   };
 };
 
@@ -68,6 +70,7 @@ export default function Dashboard() {
   const dayOrder = data?.dayOrder;
   const timetable = data?.timetable;
   const dashSummary = data?.dashSummary;
+  const attendanceDetails = data?.attendanceDetails || [];
 
   let errorDetails = null;
   if (!token) {
@@ -125,6 +128,10 @@ export default function Dashboard() {
           <div style={{ fontWeight: 'bold', color: '#f8fafc' }}>{userInfo?.regNumber || userInfo?.registrationNumber || '...'} &rarr;</div>
         </Link>
       </header>
+
+      <div style={{ marginTop: '24px' }}>
+        <InstallPrompt />
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
         <div className="glass-panel animate-fade-in" style={{ animationDelay: '0.1s' }}>
@@ -189,9 +196,9 @@ export default function Dashboard() {
 
                         if (!slotInfo) {
                           return (
-                            <div key={idx} style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', borderLeft: '4px solid rgba(255,255,255,0.1)', marginBottom: '8px' }}>
+                            <div key={idx} style={{ background: 'rgba(255,255,255,0.02)', padding: '12px 16px', borderRadius: '12px', borderLeft: '4px solid rgba(255,255,255,0.1)', marginBottom: '8px' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ fontWeight: '900', fontSize: '1.05rem', color: '#64748b', letterSpacing: '0.5px' }}>
+                                <div style={{ fontWeight: '900', fontSize: '0.85rem', color: '#64748b', letterSpacing: '0.5px' }}>
                                   {timeStr}
                                 </div>
                                 <div style={{ background: 'rgba(255,255,255,0.05)', color: '#94a3b8', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold' }}>
@@ -205,10 +212,28 @@ export default function Dashboard() {
                           );
                         }
 
+                        let marginBadge = null;
+                        if (attendanceDetails.length > 0) {
+                          const attRecord = attendanceDetails.find((a: any) => a.courseCode === slotInfo.code || (a.courseTitle && slotInfo.title && a.courseTitle.includes(slotInfo.title)));
+                          if (attRecord) {
+                            const conducted = parseInt(attRecord.conducted) || 0;
+                            const attended = parseInt(attRecord.attended) || 0;
+                            if (conducted > 0) {
+                              if (attended / conducted >= 0.75) {
+                                const margin = Math.floor(attended / 0.75) - conducted;
+                                marginBadge = <div style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid rgba(16, 185, 129, 0.3)' }}>Safe: {margin}</div>;
+                              } else {
+                                const req = Math.ceil((0.75 * conducted - attended) / 0.25);
+                                marginBadge = <div style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold', border: '1px solid rgba(239, 68, 68, 0.3)' }}>Req: {req}</div>;
+                              }
+                            }
+                          }
+                        }
+
                         return (
-                          <div key={idx} style={{ background: 'linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(0,0,0,0.3))', padding: '16px', borderRadius: '12px', borderLeft: '4px solid var(--primary)', marginBottom: '8px' }}>
+                          <div key={idx} style={{ background: 'linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(0,0,0,0.3))', padding: '12px 16px', borderRadius: '12px', borderLeft: '4px solid var(--primary)', marginBottom: '8px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                              <div style={{ fontWeight: '900', fontSize: '1.15rem', color: '#38bdf8', letterSpacing: '0.5px' }}>
+                              <div style={{ fontWeight: '900', fontSize: '0.95rem', color: '#38bdf8', letterSpacing: '0.5px' }}>
                                 {timeStr}
                               </div>
                               <div style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 'bold' }}>
@@ -219,7 +244,10 @@ export default function Dashboard() {
                               {slotInfo.title}
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: '#94a3b8' }}>
-                              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>{slotInfo.code}</div>
+                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>{slotInfo.code}</div>
+                                {marginBadge}
+                              </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#cbd5e1' }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                                 {slotInfo.room}
