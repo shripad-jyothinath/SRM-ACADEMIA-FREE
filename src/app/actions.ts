@@ -251,3 +251,55 @@ export async function fetchTimetable(token: string) {
   if (data?.error) return { error: data.error, status: data.status };
   return data;
 }
+
+// ==========================================
+// MOCK PARENT PORTAL APIS (TO BE IMPLEMENTED)
+// ==========================================
+
+export async function loginParent(identifier: string, credential: string) {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // Return a mock parent token
+  return { success: true, token: "mock_parent_token_2026", error: null as string | null };
+}
+
+export async function fetchParentDashboard(token: string) {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  if (token !== "mock_parent_token_2026") {
+    return { error: 'Invalid parent session', status: 401 };
+  }
+  
+  // Return mock data that mirrors standard student data structure
+  return {
+    userInfo: {
+      name: "John Doe (Ward)",
+      program: "B.Tech Computer Science and Engineering",
+      registrationNumber: "RA2011003011001",
+      section: "A"
+    },
+    dayOrder: {
+      dayOrder: "3"
+    },
+    timetable: {
+      "schedule": {
+        "1": [], "2": [], "3": [
+          { slot: "P-1", title: "Data Structures", code: "CS101", room: "TP-101" },
+          { slot: "P-2", title: "Operating Systems", code: "CS102", room: "TP-102" }
+        ], "4": [], "5": []
+      }
+    },
+    dashSummary: {
+      marks: "45.00",
+      maxMarks: "50.00",
+      attendance: "85.20"
+    },
+    attendanceDetails: [
+      { courseCode: "CS101", courseTitle: "Data Structures", attended: "30", conducted: "35" },
+      { courseCode: "CS102", courseTitle: "Operating Systems", attended: "28", conducted: "32" }
+    ]
+  };
+}
+

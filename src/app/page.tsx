@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Mail, Lock, Sparkles, ArrowRight, AlertCircle, ShieldCheck } from 'lucide-react';
 
 export default function Page() {
@@ -239,9 +240,30 @@ export default function Page() {
             </form>
           </div>
           
-          {/* Optional Footer Text */}
-          <div className="animate-fade-in-up delay-300" style={{ textAlign: 'center', marginTop: '24px', opacity: 0.6 }}>
-            <p style={{ fontSize: '0.85rem' }}>Designed for a seamless experience</p>
+          {/* Optional Footer Text and Parent Portal Link */}
+          <div className="animate-fade-in-up delay-300" style={{ textAlign: 'center', marginTop: '24px' }}>
+            <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '16px' }}>Designed for a seamless experience</p>
+            
+            <Link 
+              href="/parent" 
+              style={{ 
+                display: 'inline-block',
+                padding: '12px 24px', 
+                background: 'rgba(255,255,255,0.05)', 
+                border: '1px solid rgba(255,255,255,0.1)', 
+                borderRadius: '12px', 
+                color: '#94a3b8', 
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                transition: 'all 0.2s',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+              }}
+              onMouseOver={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#f8fafc'; }}
+              onMouseOut={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#94a3b8'; }}
+            >
+              Are you a parent? <span style={{ color: '#10b981' }}>Login here</span> &rarr;
+            </Link>
           </div>
         </div>
       </main>
